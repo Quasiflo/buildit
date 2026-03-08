@@ -3,7 +3,7 @@
 local M = {}
 
 local cmd = require("cmd")
-local prefs = require("src.utils.prefs")
+local prefs = require("src.private.prefs")
 
 function M.escape_magic(s)
     return (s:gsub("[%^%$%(%)%%%.%[%]%*%+%-%?]", "%%%1"))
@@ -14,8 +14,8 @@ function M.get_builds_path(download_path)
 end
 
 function M.get_parallel_cores()
-    if prefs.build_cores then
-        return tostring(prefs.build_cores)
+    if prefs.options.build_cores then
+        return tostring(prefs.options.build_cores)
     end
 
     local cores_cmd = RUNTIME.osType == "linux" and "nproc" or "sysctl -n hw.ncpu"

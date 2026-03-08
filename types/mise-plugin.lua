@@ -13,14 +13,6 @@
 ---@field pluginDirPath string Path to the plugin directory
 RUNTIME = {}
 
---- @deprecated Use RUNTIME.osType instead
----@type string
-OS_TYPE = ""
-
---- @deprecated Use RUNTIME.archType instead
----@type string
-ARCH_TYPE = ""
-
 ------------------------------------------------------------------------
 -- PLUGIN table & hook method signatures
 ------------------------------------------------------------------------
@@ -100,6 +92,7 @@ ARCH_TYPE = ""
 
 ---@class BackendListVersionsCtx
 ---@field tool string Tool name
+---@field options table<string, string>
 
 ---@class BackendListVersionsResult
 ---@field versions string[] List of available versions
@@ -108,6 +101,7 @@ ARCH_TYPE = ""
 ---@field tool string Tool name
 ---@field version string Version to install
 ---@field install_path string Path where the tool should be installed
+---@field options table<string, string>
 
 ---@class BackendInstallResult
 
@@ -115,9 +109,13 @@ ARCH_TYPE = ""
 ---@field tool string Tool name
 ---@field version string Installed version
 ---@field install_path string Installation path
+---@field options table<string, string>
 
 ---@class BackendExecEnvResult
 ---@field env_vars EnvKey[] Environment variables to set
+
+---@class UserPrefs
+---@field prefs table<string, string>
 
 ---@class Plugin
 ---@field name string Plugin name
@@ -131,6 +129,19 @@ ARCH_TYPE = ""
 ---@field BackendListVersions? fun(self: Plugin, ctx: BackendListVersionsCtx): BackendListVersionsResult
 ---@field BackendInstall? fun(self: Plugin, ctx: BackendInstallCtx): BackendInstallResult
 ---@field BackendExecEnv? fun(self: Plugin, ctx: BackendExecEnvCtx): BackendExecEnvResult
+
+---@class Module
+---@field name string Module name
+---@field Available? fun(self: Module, ctx: AvailableCtx): AvailableVersion[]
+---@field PreInstall? fun(self: Module, ctx: PreInstallCtx): PreInstallResult
+---@field PostInstall? fun(self: Module, ctx: PostInstallCtx)
+---@field EnvKeys? fun(self: Module, ctx: EnvKeysCtx): EnvKey[]
+---@field ParseLegacyFile? fun(self: Module, ctx: ParseLegacyFileCtx): ParseLegacyFileResult
+---@field MiseEnv? fun(self: Module, ctx: MiseEnvCtx): MiseEnvResult|EnvKey[]
+---@field MisePath? fun(self: Module, ctx: MisePathCtx): string[]
+---@field ModuleListVersions? fun(self: Module, ctx: BackendListVersionsCtx, prefs: UserPrefs): BackendListVersionsResult
+---@field ModuleInstall? fun(self: Module, ctx: BackendInstallCtx, prefs: UserPrefs): BackendInstallResult
+---@field ModuleExecEnv? fun(self: Module, ctx: BackendExecEnvCtx, prefs: UserPrefs): BackendExecEnvResult
 PLUGIN = {}
 
 ------------------------------------------------------------------------
