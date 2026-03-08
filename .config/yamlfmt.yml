@@ -1,0 +1,4 @@
+---
+formatter:
+  type: basic
+  include_document_start: true # Including --- even on single stream files avoids later problems if parsed together with other files

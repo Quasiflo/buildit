@@ -1,0 +1,19 @@
+FROM mcr.microsoft.com/devcontainers/base:ubuntu
+
+ARG USERNAME=vscode
+
+RUN \
+    # Install file for Yazi file contents previews
+    apt-get update && \
+    apt-get install -y --no-install-recommends file && \
+    rm -rf /var/lib/apt/lists/* && \
+    # Make command history file
+    mkdir /cmdhistory && touch /cmdhistory/.zsh_history && \
+    # Set up .zshrc
+    cat <<EOF >> /home/vscode/.zshrc
+export PROMPT_COMMAND='history -a' # Saves history immediately after command
+export HISTFILE=/cmdhistory/.zsh_history # Save history to file on a persistent volume
+eval "\$(mise activate zsh)" # Enables Mise in shells
+eval "\$(pitchfork activate zsh)" # Enables Pitchfork autostart in shells
+export EDITOR=nano  # Preference for Yazi to use nano
+EOF

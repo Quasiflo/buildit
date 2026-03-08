@@ -1,0 +1,3 @@
+exclude = [
+  '^https://github\.com/llvm/llvm-project/releases/download/llvmorg-',  # LLVM download urls assembled from this
+]

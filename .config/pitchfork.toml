@@ -1,0 +1,10 @@
+[daemons.gen_devcontainer]
+run = '''
+mise watch \
+--watch .devcontainer \
+--watch .config \
+--ignore '.devcontainer/devcontainer.json' \
+gen_devcontainer
+'''
+ready_output = "[Command was successful]"
+auto = ["start", "stop"]

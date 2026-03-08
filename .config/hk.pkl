@@ -1,0 +1,135 @@
+/// * HK - Git Hook Configuration
+/// This ensures you are committing properly linted and formatted files which will pass ci
+amends "package://github.com/jdx/hk/releases/download/v1.36.0/hk@1.36.0#/Config.pkl"
+import "package://github.com/jdx/hk/releases/download/v1.36.0/hk@1.36.0#/Builtins.pkl"
+import "pkl:reflect"
+
+// Absolute dir of this file
+local __file__ =
+  let (uri = reflect.Module(this).uri)
+    (uri.substring(uri.indexOf(":") + 1, uri.length).replaceAll(Regex(#"/+/"#), "/"))
+
+// Get absolute dirs for tool config files
+local hadolintConfig = __file__.replaceLast("hk.pkl", "hadolint.yml")
+local lycheeConfig = __file__.replaceLast("hk.pkl", "lychee.toml")
+local markdownlintConfig = __file__.replaceLast("hk.pkl", "markdownlint.yml")
+local styluaConfig = __file__.replaceLast("hk.pkl", "stylua.toml")
+local yamlfmtConfig = __file__.replaceLast("hk.pkl", "yamlfmt.yml")
+local yamllintConfig = __file__.replaceLast("hk.pkl", "yamllint.yml")
+
+// File type globs
+local miseFiles = List("**/mise*.toml")
+
+local docs = new Mapping<String, Step> {
+  //* Markdown
+  ["markdown lint"] = (Builtins.markdown_lint) {
+    check = "markdownlint --config \(markdownlintConfig) {{ files }}"
+    fix = "markdownlint --config \(markdownlintConfig) --fix {{ files }}"
+  }
+}
+
+local tooling = new Mapping<String, Step> {
+  // ["todo"] = Builtins.actionlint
+  // zizmor https://github.com/zizmorcore/zizmor
+  ["mise L&F"] = Builtins.mise
+}
+
+local config = new Mapping<String, Step> {
+  //* Pkl
+  ["pkl format"] = Builtins.pkl_format
+  ["pkl lint"] = (Builtins.pkl) {
+    depends = List("pkl format")
+  }
+  //* Toml
+  ["toml format"] = (Builtins.tombi_format) {
+    check = "tombi format --check --diff --quiet {{ files }}"
+    fix = "tombi format --quiet {{ files }}"
+    exclude = miseFiles
+  }
+  ["toml lint"] = (Builtins.tombi) {
+    depends = List("toml format")
+    exclude = miseFiles
+  }
+  //* Json
+  ["json L&F"] = (Builtins.jq) {
+    exclude = List("**/.vscode/settings.json", "**/jsconfig.json", "**/package.json")
+  }
+  //* Yaml
+  ["yaml format"] = (Builtins.yamlfmt) {
+    check = "yamlfmt -conf \(yamlfmtConfig) -lint {{ files }}"
+    fix = "yamlfmt -conf \(yamlfmtConfig) {{ files }}"
+  }
+  ["yaml lint"] = (Builtins.yamllint) {
+    check = "yamllint --strict -c \(yamllintConfig) {{ files }}"
+    depends = List("yaml format")
+  }
+  //* Docker
+  ["dockerfile lint"] = (Builtins.hadolint) {
+    glob = List("**/dockerfile")
+    check = "hadolint --config \(hadolintConfig) {{ files }}"
+  }
+}
+
+local languages = new Mapping<String, Step> {
+  //* Shell
+  ["shell format"] = Builtins.shfmt
+  ["shell lint"] = (Builtins.shellcheck) {
+    depends = List("shell format")
+  }
+  //* Lua
+  ["lua format"] = (Builtins.stylua) {
+    check = "stylua --config-path \(styluaConfig) --check {{ files }}"
+    fix = "stylua --config-path \(styluaConfig) {{ files }}"
+  }
+  ["lua lint"] {
+    glob = "**/*.lua"
+    check = "lua-language-server --check ."
+    depends = List("lua format")
+  }
+}
+
+// Shared linters (apply to all components)
+local shared = new Group {
+  steps = new Mapping<String, Step> {
+    ["large files"] = (Builtins.check_added_large_files) {
+      check = "hk util check-added-large-files --maxkb 10240 {{files}}"
+    }
+    ["byte order marker"] = Builtins.byte_order_marker
+    ["case conflict"] = Builtins.check_case_conflict
+    ["shebangs"] = Builtins.check_executables_have_shebangs
+    ["merge conflict"] = Builtins.check_merge_conflict
+    ["symlinks"] = Builtins.check_symlinks
+    ["leak private key"] = Builtins.detect_private_key
+    ["smart quotes"] = Builtins.fix_smart_quotes
+    ["mixed line ending"] = Builtins.mixed_line_ending
+    ["file newlines"] = Builtins.newlines
+    ["trailing whitespace"] = Builtins.trailing_whitespace
+    ["broken link check"] = (Builtins.lychee) {
+      exclude = List(".config/lychee.toml")
+      check = "lychee --no-progress --config \(lycheeConfig) {{ files }}"
+    }
+  }
+}
+
+local all = new Mapping<String, Step | Group> {
+  ...docs
+  ...tooling
+  ...config
+  ...languages
+  ["Shared"] = shared
+}
+
+hooks {
+  ["pre-commit"] {
+    fix = true
+    stash = true
+    steps = all
+  }
+  ["check"] {
+    steps = all
+  }
+  ["fix"] {
+    steps = all
+    fix = true
+  }
+}

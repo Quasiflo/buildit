@@ -1,0 +1,8 @@
+---
+failure-threshold: warning
+ignored:
+  - DL3008 # Don't require versions with apt-install
+trustedRegistries:
+  - docker.io
+  - "*.gcr.io"
+  - mcr.microsoft.com

@@ -1,0 +1,88 @@
+allowedPlatforms = List("", "amd64")
+
+platform =
+  let (p = read?("env:DEVCONTAINER_PLATFORM") ?? "")
+    if (allowedPlatforms.contains(p)) p else throw("Invalid platform: '\(p)'.")
+
+local platformSelected = if (platform == "") "native" else platform
+local nativePlatform: Boolean = platformSelected == "native"
+local platformFlag = "--platform=linux/" + platformSelected
+local isWorktree = parseBool(read?("env:IS_WORKTREE"))
+
+function parseBool(s: String?): Boolean =
+  let (lower = (s ?? "false").toLowerCase())
+    lower == "true"
+      || lower == "t"
+      || lower == "yes"
+      || lower == "y"
+      || lower == "on"
+      || lower == "1"
+
+config = new {
+  name = "opencode"
+  build {
+    dockerfile = "Dockerfile"
+    when (!nativePlatform) {
+      options = List(platformFlag)
+    }
+  }
+  features {
+    ["ghcr.io/devcontainers-extra/features/mise:1"] = new {}
+    ["ghcr.io/devcontainers/features/common-utils:2"] = new {
+      configureZshAsDefaultShell = true
+      installZsh = true
+    }
+  }
+  customizations {
+    vscode {
+      extensions = new Listing {
+        "hverlin.mise-vscode"
+        "tamasfe.even-better-toml"
+      }
+    }
+  }
+  mounts = new Listing {
+    new {
+      source = "mise-data-volume-" + platformSelected
+      target = "/mnt/mise-data"
+      type = "volume"
+    }
+    new {
+      source = "opencode-data-volume-" + platformSelected
+      target = "/home/vscode/.local/share/opencode"
+      type = "volume"
+    }
+    new {
+      source = "cli-history"
+      target = "/cmdhistory"
+      type = "volume"
+    }
+    when (isWorktree) {
+      new {
+        source = read("env:COMMON_GIT_DIR")
+        target = "/mnt/git-root"
+        type = "bind"
+      }
+    }
+  }
+  containerEnv {
+    MISE_DATA_DIR = "/mnt/mise-data"
+    MISE_ENV = "opencode"
+    MISE_TRUSTED_CONFIG_PATHS = "/"
+    when (isWorktree) {
+      GIT_DIR = "/mnt/git-root/" + read("env:RELATIVE_LOCAL_GIT_DIR")
+      GIT_COMMON_DIR = "/mnt/git-root"
+      GIT_WORK_TREE = "/workspaces/" + read("env:GIT_WORKTREE_PROJECT_NAME")
+    }
+  }
+  when (!nativePlatform) {
+    runArgs = List(platformFlag)
+  }
+  postCreateCommand = "bash .devcontainer/post-create.sh"
+  postStartCommand = "bash .devcontainer/post-start.sh"
+}
+
+output {
+  value = config
+  renderer = new JsonRenderer { omitNullProperties = true }
+}
