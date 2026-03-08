@@ -23,4 +23,15 @@ function M.get_parallel_cores()
     return cores_output:gsub("%s+", "")
 end
 
+--- @param dataTable table Table to be extracted from
+--- @param func function Function to apply to each pair to extract desired element
+--- @return table -- Table mapped by function
+function M.mapTable(dataTable, func)
+    local result = {}
+    for _, value in ipairs(dataTable) do
+        table.insert(result, func(value))
+    end
+    return result
+end
+
 return M
