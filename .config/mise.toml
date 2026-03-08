@@ -22,12 +22,6 @@ shfmt = "latest"
 "npm:markdownlint-cli" = "latest"
 lychee = "latest"
 
-# Plugin testing requirements
-# cmake = "latest"
-# ninja = "latest"
-# python = "latest"
-# "llvm:clang" = { version = "latest", build_cores = 22, clang_extras = false, build_sequentially = true }
-
 [tasks.format]
 description = "Format Lua scripts"
 run = "stylua metadata.lua hooks/ src/"

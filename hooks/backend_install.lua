@@ -8,5 +8,6 @@ function PLUGIN:BackendInstall(ctx)
     prefs.init(ctx)
 
     local module = mod.validate(ctx.tool, "install")
+    mod.installDeps(module.dependencies)
     return module.ModuleInstall(ctx, prefs.options)
 end

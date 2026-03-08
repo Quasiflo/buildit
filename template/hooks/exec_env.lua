@@ -3,6 +3,11 @@
 
 local M = {}
 
+--- @type string[] List of mise installable dependencies required to setup envs for this module
+M.dependencies = {
+    -- "cmake@latest" -- for example
+}
+
 --- @param ctx {install_path: string, tool: string, version: string} Context
 --- @param prefs table<string, string> User configured plugin preferences
 --- @return {env_vars: table[]} Table containing list of environment variable definitions

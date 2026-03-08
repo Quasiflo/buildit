@@ -8,5 +8,6 @@ function PLUGIN:BackendListVersions(ctx)
     prefs.init(ctx)
 
     local module = mod.validate(ctx.tool, "list_versions")
+    mod.installDeps(module.dependencies)
     return module.ModuleListVersions(ctx, prefs.options)
 end

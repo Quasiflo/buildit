@@ -8,5 +8,6 @@ function PLUGIN:BackendExecEnv(ctx)
     prefs.init(ctx)
 
     local module = mod.validate(ctx.tool, "exec_env")
+    mod.installDeps(module.dependencies)
     return module.ModuleExecEnv(ctx, prefs.options)
 end

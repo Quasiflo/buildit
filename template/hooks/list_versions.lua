@@ -3,6 +3,11 @@
 
 local M = {}
 
+--- @type string[] List of mise installable dependencies required to list versions for this module
+M.dependencies = {
+    -- "cmake@latest" -- for example
+}
+
 --- @param ctx {tool: string} Context (tool = the tool name requested)
 --- @param prefs table<string, string> User configured plugin preferences
 --- @return {versions: string[]} Table containing list of available versions
