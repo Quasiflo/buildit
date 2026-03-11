@@ -1,5 +1,6 @@
 [env]
 MISE_USE_VERSIONS_HOST = "false" # Force remote version fetching for development
+MISE_DEBUG = 1
 
 [tools]
 # actionlint = "latest"

@@ -103,6 +103,14 @@ RUNTIME = {}
 ---@field install_path string Path where the tool should be installed
 ---@field options table<string, string>
 
+---@class ModuleInstallCtx
+---@field tool string Tool name
+---@field version string Version to install
+---@field download_path string Path where the tool should be downloaded into
+---@field build_path string Path where the tool should be unpacked and built
+---@field install_path string Path where the tool should be installed
+---@field options table<string, string>
+
 ---@class BackendInstallResult
 
 ---@class BackendExecEnvCtx
@@ -113,9 +121,6 @@ RUNTIME = {}
 
 ---@class BackendExecEnvResult
 ---@field env_vars EnvKey[] Environment variables to set
-
----@class UserPrefs
----@field prefs table<string, string>
 
 ---@class Plugin
 ---@field name string Plugin name
@@ -139,9 +144,9 @@ RUNTIME = {}
 ---@field ParseLegacyFile? fun(self: Module, ctx: ParseLegacyFileCtx): ParseLegacyFileResult
 ---@field MiseEnv? fun(self: Module, ctx: MiseEnvCtx): MiseEnvResult|EnvKey[]
 ---@field MisePath? fun(self: Module, ctx: MisePathCtx): string[]
----@field ModuleListVersions? fun(self: Module, ctx: BackendListVersionsCtx, prefs: UserPrefs): BackendListVersionsResult
----@field ModuleInstall? fun(self: Module, ctx: BackendInstallCtx, prefs: UserPrefs): BackendInstallResult
----@field ModuleExecEnv? fun(self: Module, ctx: BackendExecEnvCtx, prefs: UserPrefs): BackendExecEnvResult
+---@field ModuleListVersions? fun(self: Module, ctx: BackendListVersionsCtx): BackendListVersionsResult
+---@field ModuleInstall? fun(self: Module, ctx: ModuleInstallCtx): BackendInstallResult
+---@field ModuleExecEnv? fun(self: Module, ctx: BackendExecEnvCtx): BackendExecEnvResult
 PLUGIN = {}
 
 ------------------------------------------------------------------------
