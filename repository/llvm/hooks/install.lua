@@ -1,6 +1,3 @@
---- Installs a specific version of a tool
---- Documentation: https://mise.jdx.dev/backend-plugin-development.html#backendinstall
-
 local M = {}
 
 local download = require("src.utils.download")

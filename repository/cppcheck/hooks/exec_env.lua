@@ -1,6 +1,3 @@
---- Sets up environment variables for a tool
---- Documentation: https://mise.jdx.dev/backend-plugin-development.html#backendexecenv
-
 local M = {}
 
 local file = require("file")

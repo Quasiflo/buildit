@@ -1,6 +1,3 @@
---- Lists available versions for a tool in this backend
---- Documentation: https://mise.jdx.dev/backend-plugin-development.html#backendlistversions
-
 local M = {}
 
 --- @param ctx ModuleInstallCtx Context
