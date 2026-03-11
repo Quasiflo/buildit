@@ -3,15 +3,15 @@
 
 local M = {}
 
---- @type string[] List of mise installable dependencies required to build this module
-M.dependencies = {
-    -- "cmake@latest" -- for example
-}
+--- @param ctx ModuleInstallCtx Context
+--- @return string[] List of mise installable dependencies required to build this module
+function M.dependencies(ctx)
+    return {}
+end
 
---- @param ctx {tool: string, version: string, install_path: string, download_path: string} Context
---- @param prefs table<string, string> User configured plugin preferences
+--- @param ctx ModuleInstallCtx Context
 --- @return table -- Empty table on success
-function M.ModuleInstall(ctx, prefs)
+function M.ModuleInstall(ctx)
     return {}
 end
 

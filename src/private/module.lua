@@ -28,7 +28,16 @@ function M.installDeps(dependencies)
         table.insert(parts, dep)
     end
 
-    cmd.exec(table.concat(parts, " "))
+    local handle = io.popen(table.concat(parts, " ") .. " 2>&1")
+    if handle then
+        for line in handle:lines() do
+            print(line)
+        end
+        local ok, reason, code = handle:close()
+        if not ok then
+            error(string.format("mise install failed (exit %d: %s)", code, reason))
+        end
+    end
 end
 
 return M
