@@ -48,7 +48,11 @@ M.validators.ext_sha256 = function(ext_checksum)
         verify = function(tarball_path, _)
             return checksum.verify_sha256(tarball_path, ext_checksum)
         end,
-        known_good = function(_) end,
+        known_good = function(tarball_path)
+            if not checksum.verify_sha256(tarball_path, ext_checksum) then
+                error("Failed to match download with external checksum!")
+            end
+        end,
         on_invalid = function(tarball_path)
             cmd.exec("rm -f " .. tarball_path)
         end,
@@ -83,7 +87,11 @@ M.validators.jsonl = function(jsonl_path, repo)
         verify = function(tarball_path, _)
             return checksum.verify_jsonl(tarball_path, jsonl_path, repo)
         end,
-        known_good = function(_) end,
+        known_good = function(tarball_path)
+            if not checksum.verify_jsonl(tarball_path, jsonl_path, repo) then
+                error("Failed to match download with external checksum!")
+            end
+        end,
         on_invalid = function(tarball_path)
             cmd.exec("rm -f " .. tarball_path)
             cmd.exec("rm -f " .. jsonl_path)
