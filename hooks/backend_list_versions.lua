@@ -3,11 +3,10 @@
 --- @param ctx {tool: string} Context (tool = the tool name requested)
 --- @return {versions: string[]} Table containing list of available versions
 function PLUGIN:BackendListVersions(ctx)
+    require("src.utils.prefs").init(ctx)
     local mod = require("src.private.module")
-    local prefs = require("src.private.prefs")
-    prefs.init(ctx)
 
     local module = mod.validate(ctx.tool, "list_versions")
-    mod.installDeps(module.dependencies)
-    return module.ModuleListVersions(ctx, prefs.options)
+    mod.installDeps(module.dependencies(ctx))
+    return module.ModuleListVersions(ctx)
 end
