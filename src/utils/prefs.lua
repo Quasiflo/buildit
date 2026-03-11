@@ -3,21 +3,24 @@ local M = {}
 
 local log = require("log")
 
-M.options = nil
+local init = false
 
 --- @param ctx any The module requested
 function M.init(ctx)
-    if not M.options == nil then
+    if init then
         return -- Ensure we only initialise once
     end
 
     if ctx.options == nil then
         log.debug("No config options found")
-        M.options = {}
     else
         log.debug("Config options loaded successfully")
-        M.options = ctx.options
+        for k, v in pairs(ctx.options) do
+            M[k] = v -- Merge values in
+        end
     end
+
+    init = true
 end
 
 return M

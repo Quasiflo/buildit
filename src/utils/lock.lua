@@ -70,6 +70,12 @@ local function cleanup_stale_lock(lock_dir)
     pcall(cmd.exec, "rm -rf '" .. lock_dir .. "'")
 end
 
+--- @param base_path string Directory for lock file
+--- @return string -- Lockfile path
+function M.lockfile_path(base_path)
+    return file.join_path(base_path, ".lock")
+end
+
 --- @param lock_path string Path for requested lock
 --- @param opts table Additional options
 function M.acquire(lock_path, opts)
@@ -179,12 +185,12 @@ function M.release(lock_path)
     return true
 end
 
--- function M.is_locked(lock_path)
---     return file.exists(lock_path)
--- end
+function M.is_locked(lock_path)
+    return file.exists(lock_path)
+end
 
--- function M.get_lock_info(lock_path)
---     return read_lock_info(lock_path)
--- end
+function M.get_lock_info(lock_path)
+    return read_lock_info(lock_path)
+end
 
 return M
