@@ -2,10 +2,9 @@
 local M = {}
 M.validators = {}
 
-local cmd = require("cmd")
 local log = require("log")
 local file = require("file")
-local util = require("src.utils.util")
+local utils = require("src.utils.utils")
 local lock = require("src.utils.lock")
 local checksum = require("src.utils.checksum")
 
@@ -54,7 +53,7 @@ M.validators.ext_sha256 = function(ext_checksum)
             end
         end,
         on_invalid = function(tarball_path)
-            cmd.exec("rm -f " .. tarball_path)
+            utils.exec("rm -f " .. utils.quote(tarball_path))
         end,
     }
 end
@@ -72,8 +71,8 @@ M.validators.cached_sha256 = function()
             checksum.save_sha256(tarball_path)
         end,
         on_invalid = function(tarball_path)
-            cmd.exec("rm -f " .. tarball_path)
-            cmd.exec("rm -f " .. checksum.get_integrity_path(tarball_path))
+            utils.exec("rm -f " .. utils.quote(tarball_path))
+            utils.exec("rm -f " .. utils.quote(checksum.get_integrity_path(tarball_path)))
         end,
     }
 end
@@ -93,8 +92,8 @@ M.validators.jsonl = function(jsonl_path, repo)
             end
         end,
         on_invalid = function(tarball_path)
-            cmd.exec("rm -f " .. tarball_path)
-            cmd.exec("rm -f " .. jsonl_path)
+            utils.exec("rm -f " .. utils.quote(tarball_path))
+            utils.exec("rm -f " .. utils.quote(jsonl_path))
         end,
     }
 end
@@ -110,7 +109,7 @@ function M.download_tarball(url, download_path, build_path, validator)
 
     lock.acquire(lock_path, { timeout = 300000 })
 
-    if not util.is_dir_empty(build_path) then
+    if not utils.is_dir_empty(build_path) then
         log.debug("Source already available, skipping download...")
         return tarball_path
     end
@@ -135,7 +134,7 @@ function M.download_tarball(url, download_path, build_path, validator)
     end
 
     log.debug("Downloading " .. url)
-    cmd.exec("curl -L --fail -o " .. tarball_path .. " " .. url)
+    utils.exec("curl -L --fail -o " .. utils.quote(tarball_path) .. " " .. utils.quote(url))
     validator.known_good(tarball_path)
     log.debug("Downloaded " .. tarball_name)
     lock.release(lock_path)
@@ -152,7 +151,7 @@ function M.download_checksum_file(url, tarball_url, tarball_download_path)
 
     lock.acquire(lock_path, { timeout = 30000 })
     if not file.exists(integrity_file) then
-        cmd.exec("curl -L --fail -o " .. integrity_file .. " " .. url)
+        utils.exec("curl -L --fail -o " .. utils.quote(integrity_file) .. " " .. utils.quote(url))
     else
         log.warn("Integrity file already exists")
     end
@@ -169,10 +168,9 @@ function M.extract_tarball(tarball_path, build_path, strip_levels)
 
     lock.acquire(lock_path, { timeout = 300000 })
 
-    if util.is_dir_empty(build_path) then
-        local strip_cmd = "tar -xJf " .. tarball_path .. " -C " .. build_path .. " --strip-components=" .. strip_levels
-        log.debug("Extracting source with: " .. strip_cmd)
-        cmd.exec(strip_cmd)
+    if utils.is_dir_empty(build_path) then
+        log.debug("Extracting source...")
+        utils.exec("tar -xJf " .. utils.quote(tarball_path) .. " -C " .. utils.quote(build_path) .. " --strip-components=" .. strip_levels)
         log.debug("Extracted source")
     else
         log.debug("Source already extracted")

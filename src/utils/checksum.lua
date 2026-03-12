@@ -1,12 +1,12 @@
 --- Checksum verification module for downloaded tarballs
 local M = {}
 
-local cmd = require("cmd")
+local utils = require("src.utils.utils")
 local file = require("file")
 
 --- @param tarball_path string Path to tarball to compute checksum of
 local function compute_sha256(tarball_path)
-    local result = cmd.exec("sha256sum " .. tarball_path)
+    local result = utils.exec("sha256sum " .. utils.quote(tarball_path))
     if not result then
         error("Failed to compute SHA256 for " .. tarball_path)
     end
@@ -66,9 +66,9 @@ end
 --- @param repo string github repo to verify against, ie llvm/llvm-project
 --- !WARNING this function requires the `gh` cmd line tool!
 function M.verify_jsonl(tarball_path, jsonl_path, repo)
-    local command = "gh attestation verify --repo " .. repo .. " " .. tarball_path .. " --bundle " .. jsonl_path
+    local command = "gh attestation verify --repo " .. utils.quote(repo) .. " " .. utils.quote(tarball_path) .. " --bundle " .. utils.quote(jsonl_path)
 
-    local success, path_result = pcall(cmd.exec, command)
+    local success, path_result = pcall(utils.exec, command)
     if success and path_result and not path_result.exit_code then
         return true
     else

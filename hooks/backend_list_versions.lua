@@ -7,6 +7,8 @@ function PLUGIN:BackendListVersions(ctx)
     local mod = require("src.private.module")
 
     local module = mod.validate(ctx.tool, "list_versions")
-    mod.installDeps(module.dependencies(ctx))
+    local deps = module.dependencies(ctx)
+    require("src.utils.utils").init_mise_deps(deps)
+    mod.installDeps(deps)
     return module.ModuleListVersions(ctx)
 end

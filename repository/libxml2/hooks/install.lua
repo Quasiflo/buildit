@@ -1,7 +1,7 @@
 local M = {}
 
 local download = require("src.utils.download")
-local util = require("src.utils.util")
+local util = require("src.utils.utils")
 local semver = require("semver")
 local log = require("log")
 local build = require("repository.libxml2.src.build")

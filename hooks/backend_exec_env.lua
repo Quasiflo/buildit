@@ -7,6 +7,8 @@ function PLUGIN:BackendExecEnv(ctx)
     local mod = require("src.private.module")
 
     local module = mod.validate(ctx.tool, "exec_env")
-    mod.installDeps(module.dependencies(ctx))
+    local deps = module.dependencies(ctx)
+    require("src.utils.utils").init_mise_deps(deps)
+    mod.installDeps(deps)
     return module.ModuleExecEnv(ctx)
 end

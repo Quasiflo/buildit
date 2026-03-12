@@ -3,7 +3,28 @@ local M = {}
 
 local cmd = require("cmd")
 local prefs = require("src.utils.prefs")
-local log = require("log")
+
+M.mise_deps = ""
+
+--- @param deps string[] List of mise dependencies
+function M.init_mise_deps(deps)
+    M.mise_deps = table.concat(deps, " ")
+end
+
+--- @param command string Command to execute
+--- @param opts? CmdExecOpts Extra options
+--- @return unknown -- Result of command
+function M.exec(command, opts)
+    local full_cmd = "mise x " .. M.mise_deps .. " -- " .. command
+    print("COMMAND RUN: " .. full_cmd)
+    return cmd.exec(full_cmd, (opts == nil or type(opts) ~= "table") and {} or opts)
+end
+
+--- @param str string String to wrap in quotes
+--- @return string -- Resultant string with quotes
+function M.quote(str)
+    return '"' .. str .. '"'
+end
 
 --- @param input string Input string to escape magics on
 --- @return string -- Escaped gsub string
@@ -18,7 +39,7 @@ function M.get_parallel_cores()
     end
 
     local cores_cmd = RUNTIME.osType == "linux" and "nproc" or "sysctl -n hw.ncpu"
-    local cores_output = cmd.exec(cores_cmd)
+    local cores_output = M.exec(cores_cmd)
     return cores_output:gsub("%s+", "")
 end
 
@@ -36,7 +57,7 @@ end
 --- @param path string Path to check
 --- @return boolean -- Whether or not it's empty
 function M.is_dir_empty(path)
-    local ok, _ = pcall(cmd.exec, "find '" .. path .. "' -maxdepth 1 -mindepth 1 ! -name '.lock' | grep -q .")
+    local ok, _ = pcall(M.exec, "find '" .. path .. "' -maxdepth 1 -mindepth 1 ! -name '.lock' | grep -q .")
 
     if ok then
         return false
@@ -49,7 +70,7 @@ end
 --- @return string | nil -- First candidate found available or nil
 function M.find_executable(candidates)
     for _, candidate in ipairs(candidates) do
-        local success, path_result = pcall(cmd.exec, "which " .. candidate .. " 2>/dev/null")
+        local success, path_result = pcall(M.exec, "which " .. candidate .. " 2>/dev/null")
         if success and path_result and not path_result.exit_code then
             return candidate
         end

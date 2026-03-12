@@ -1,8 +1,6 @@
 --- Utils for interacting with repository modules
 local M = {}
 
-local cmd = require("cmd")
-
 --- @param module string The module requested
 --- @param hook string The name of the hook file for the task
 --- @return unknown

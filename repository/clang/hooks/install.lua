@@ -1,7 +1,7 @@
 local M = {}
 
 local download = require("src.utils.download")
-local util = require("src.utils.util")
+local util = require("src.utils.utils")
 local build = require("repository.clang.src.build")
 
 --- @param ctx ModuleInstallCtx Context

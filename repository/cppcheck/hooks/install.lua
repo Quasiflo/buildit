@@ -1,7 +1,7 @@
 local M = {}
 
 local download = require("src.utils.download")
-local util = require("src.utils.util")
+local util = require("src.utils.utils")
 local versions = require("src.utils.versions")
 local prefs = require("src.utils.prefs")
 local build = require("repository.cppcheck.src.build")

@@ -3,14 +3,13 @@
 local M = {}
 
 local semver = require("semver")
+local utils = require("src.utils.utils")
 
 --- @param url string URL of the git repository
 --- @param stripPrefix string | nil gsub compatible prefix to strip from tags, ie llvmorg%- to fix llvmorg-20.1.2
 --- @return table<string, string> -- Unordered dictionary of [semver] = tag
 function M.fetch_git_tags(url, stripPrefix)
-    local cmd = require("cmd")
-
-    local result = cmd.exec("git ls-remote --tags " .. url)
+    local result = utils.exec("git ls-remote --tags " .. utils.quote(url))
 
     if not result then
         error("Failed to fetch versions")
