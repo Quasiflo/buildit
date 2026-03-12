@@ -1,7 +1,7 @@
 local M = {}
 
 local download = require("src.utils.download")
-local util = require("src.utils.util")
+local util = require("src.utils.utils")
 local build = require("repository.llvm.src.build")
 
 --- @param ctx ModuleInstallCtx Context
@@ -29,7 +29,7 @@ function M.ModuleInstall(ctx)
         .. ".src.tar.xz"
     local integrity_url = tarball_url .. ".jsonl"
 
-    local checksumFile = download.download_checksum_file(integrity_url, tarball_url, ctx.download_path)
+    local checksumFile = download.download_checksum_file(integrity_url, tarball_url, ctx.download_path, ".jsonl")
     local tarball = download.download_tarball(
         tarball_url,
         ctx.download_path,

@@ -18,12 +18,14 @@ local function compute_sha256(tarball_path)
 end
 
 --- @param tarball_path string Path to tarball to get checksum of
-function M.get_integrity_path(tarball_path)
-    return tarball_path .. ".integrity"
+--- @param custom_ext? string Custom extension to use instead of .integrity
+--- @return string -- The resultant path
+function M.get_integrity_path(tarball_path, custom_ext)
+    return tarball_path .. ((custom_ext == nil or custom_ext == "") and ".integrity" or custom_ext)
 end
 
 --- @param tarball_path string Path to tarball to save checksum for
---- @return string -- Calculated checksum
+--- @return string -- Calculated checksum_path
 function M.save_sha256(tarball_path)
     local checksum_path = M.get_integrity_path(tarball_path)
     local checksum = compute_sha256(tarball_path)
@@ -66,7 +68,8 @@ end
 --- @param repo string github repo to verify against, ie llvm/llvm-project
 --- !WARNING this function requires the `gh` cmd line tool!
 function M.verify_jsonl(tarball_path, jsonl_path, repo)
-    local command = "gh attestation verify --repo " .. utils.quote(repo) .. " " .. utils.quote(tarball_path) .. " --bundle " .. utils.quote(jsonl_path)
+    local command = "gh attestation verify --repo " ..
+    repo .. " " .. utils.quote(tarball_path) .. " --bundle " .. utils.quote(jsonl_path)
 
     local success, path_result = pcall(utils.exec, command)
     if success and path_result and not path_result.exit_code then

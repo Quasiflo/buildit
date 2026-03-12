@@ -144,9 +144,10 @@ end
 --- @param url string Url to checksum file
 --- @param tarball_url string Tarball download url
 --- @param tarball_download_path string Tarball download path
+--- @param custom_ext? string Custom extension to use instead of .integrity
 --- @return string -- Downloaded checksum path
-function M.download_checksum_file(url, tarball_url, tarball_download_path)
-    local integrity_file = checksum.get_integrity_path(dl_path(tarball_url, tarball_download_path))
+function M.download_checksum_file(url, tarball_url, tarball_download_path, custom_ext)
+    local integrity_file = checksum.get_integrity_path(dl_path(tarball_url, tarball_download_path), custom_ext)
     local lock_path = lock.lockfile_path(tarball_download_path)
 
     lock.acquire(lock_path, { timeout = 30000 })
