@@ -1,4 +1,5 @@
 exclude = [
-  '^https://github\.com/llvm/llvm-project/releases/download/llvmorg-',  # LLVM download urls assembled from this
-  "^https://github.com/danmar/cppcheck/archive/refs/tags/"  # Cppcheck download urls assembled from this
+  '^https://github\.com/llvm/llvm-project/releases/download/llvmorg-',  # LLVM
+  '^https://github\.com/danmar/cppcheck/archive/refs/tags/',  # Cppcheck
+  '^https://download\.gnome\.org/sources/libxml2/'  ## Lib2xml
 ]

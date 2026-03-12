@@ -53,7 +53,7 @@ end
 --- @param tarball_path string Path to tarball to verify checksum for
 --- @param checksum string Checksum to validate against
 function M.verify_sha256(tarball_path, checksum)
-    local computed = M.compute_sha256(tarball_path)
+    local computed = compute_sha256(tarball_path)
     if computed == checksum then
         return true
     else
